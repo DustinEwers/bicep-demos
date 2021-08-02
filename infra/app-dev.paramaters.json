@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "systemName": {
+            "value": "swap"
+        },
+        "environment": {
+            "value": "d"
+        },
+        "sequence": {
+            "value": "01"
+        },
+        "location": {
+            "value": "centralus"
+        },
+        "appSkuName": {
+            "value": "B1"
+        },
+        "appSkuTier": {
+            "value": "Basic"
+        },
+        "dbSkuName": {
+            "value": "S0"
+        },
+        "dbSkuTier": {
+            "value": "Standard"
+        }
+    }
+}
