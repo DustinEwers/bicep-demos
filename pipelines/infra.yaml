@@ -8,8 +8,8 @@ variables:
   'bicep.outdir': $(Agent.BuildDirectory)/bicep-out
   Location: 'centralus'
 
-pool: 
-  vm-image: windows-latest
+pool:
+  vmImage: windows-latest
 
 stages:
   - stage: BuildAndValidate
@@ -26,7 +26,7 @@ stages:
         - task: AzureCLI@2
           displayName: Download / Install Bicep
           inputs:
-            azureSubscription: 'NonProd Service Connection'
+            azureSubscription: 'Azure Service Connection'
             scriptType: 'pscore'
             scriptLocation: 'inlineScript'
             inlineScript: 'az bicep install'
@@ -80,7 +80,7 @@ stages:
                 displayName: Deploy With Azure CLI
                 inputs:
                   workingDirectory: '$(Pipeline.Workspace)/drop'
-                  azureSubscription: NonProd Service Connection
+                  azureSubscription: 'Azure Service Connection'
                   scriptType: pscore
                   scriptLocation: scriptPath
                   arguments:
