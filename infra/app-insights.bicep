@@ -4,7 +4,7 @@ param logWorkspaceName string
 
 // Analytics Workspace
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2020-03-01-preview/workspaces?tabs=bicep
-resource workspaces_AnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+resource workspaces_AnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-08-01' = {
   name: logWorkspaceName
   location: location
   properties: {
