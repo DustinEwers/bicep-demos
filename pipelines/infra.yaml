@@ -8,8 +8,8 @@ variables:
   'bicep.outdir': $(Agent.BuildDirectory)/bicep-out
   Location: 'centralus'
 
-pool: 
-  vm-image: 'windows-latest'
+pool:
+  vmImage: windows-latest
 
 stages:
   - stage: BuildAndValidate
