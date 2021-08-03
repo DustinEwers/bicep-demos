@@ -9,7 +9,7 @@ variables:
   Location: 'centralus'
 
 pool: 
-  vm-image: windows-latest
+  vm-image: 'windows-latest'
 
 stages:
   - stage: BuildAndValidate
