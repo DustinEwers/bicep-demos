@@ -1,0 +1,91 @@
+trigger: none
+name: infra-$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+  'ttk.asset.filename': arm-template-toolkit.zip
+  'ttk.folder': $(Agent.BuildDirectory)\test
+  'ttk.uri': https://aka.ms/arm-ttk-latest
+  'bicep.outdir': $(Agent.BuildDirectory)/bicep-out
+  Location: 'centralus'
+
+pool: 
+  vm-image: windows-latest
+
+stages:
+  - stage: BuildAndValidate
+    displayName: Build and Validate
+    jobs: 
+    - job: ValidateTemplates
+      displayName: Validate Templates
+      steps:
+        - task: PowerShell@2
+          displayName: Download TTK
+          inputs:
+            targetType: inline          
+            script: "New-Item '$(ttk.folder)' -ItemType Directory\nInvoke-WebRequest -uri '$(ttk.uri)' -OutFile \"$(ttk.folder)/$(ttk.asset.filename)\" -Verbose\nGet-ChildItem '$(ttk.folder)' -Recurse\n\nWrite-Host \"Expanding files...\"\nExpand-Archive -Path '$(ttk.folder)/*.zip' -DestinationPath '$(ttk.folder)' -Verbose\n\nWrite-Host \"Expanded files found:\"\nGet-ChildItem '$(ttk.folder)' -Recurse"
+        - task: AzureCLI@2
+          displayName: Download / Install Bicep
+          inputs:
+            azureSubscription: 'NonProd Service Connection'
+            scriptType: 'pscore'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'az bicep install'
+            failOnStandardError: true
+        - task: PowerShell@2
+          displayName: Build Bicep Templates
+          inputs:
+            targetType: inline
+            workingDirectory: '$(Build.SourcesDirectory)/infra'
+            script: |-
+              New-Item '$(bicep.outdir)' -ItemType Directory
+              az bicep build --file app-environment.bicep
+              move-item -path '$(Build.SourcesDirectory)/infra/app-environment.json' '$(bicep.outdir)'
+
+        - task: PowerShell@2
+          displayName: Run Best Practice Tests (app-environment.json)
+          inputs: 
+            workingDirectory: $(bicep.outdir)
+            targetType: inline
+            script: "Import-Module $(ttk.folder)/arm-ttk/arm-ttk.psd1 -Verbose\n$testOutput = @(Test-AzTemplate -MainTemplateFile \"app-environment.json\" -TemplatePath \"app-environment.json\")\n$testOutput\n\nif ($testOutput | ? {$_.Errors }) {\n   exit 1 \n} else {\n    Write-Host \"##vso[task.setvariable variable=result.best.practice]$true\"\n    exit 0\n} \n"
+            failOnStderr: true
+        - task: PowerShell@2
+          displayName: Copy Files To Output Directory
+          inputs:
+            workingDirectory: '$(Build.SourcesDirectory)/infra'
+            targetType: inline
+            script: |-
+              Copy-Item *.parameters.json,*.bicep,deploy-app.ps1 '$(Build.ArtifactStagingDirectory)'
+              Copy-Item '$(bicep.outdir)/*' '$(Build.ArtifactStagingDirectory)'
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Artifacts
+          inputs: 
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: drop
+
+  - stage: DeployToDev
+    displayName: Deploy Dev Infra
+    dependsOn: BuildAndValidate
+    jobs:
+    - deployment: DeployTemplatesToDev
+      displayName: Deploy Templates to Dev
+      environment: App-Dev
+      variables:
+        ResourceGroupName: 'swap-d01-rg'
+        EnvironmentConfigFile: 'app-dev.parameters.json'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureCLI@2
+                displayName: Deploy With Azure CLI
+                inputs:
+                  workingDirectory: '$(Pipeline.Workspace)/drop'
+                  azureSubscription: NonProd Service Connection
+                  scriptType: pscore
+                  scriptLocation: scriptPath
+                  arguments:
+                    -ResourceGroupName $(ResourceGroupName) `
+                    -Location "$(Location)" `
+                    -EnvironmentConfigFile $(EnvironmentConfigFile)
+                  scriptPath: $(Pipeline.Workspace)/drop/deploy-app.ps1
+                  failOnStandardError: true
