@@ -48,6 +48,7 @@ stages:
             targetType: inline
             script: "Import-Module $(ttk.folder)/arm-ttk/arm-ttk.psd1 -Verbose\n$testOutput = @(Test-AzTemplate -MainTemplateFile \"app-environment.json\" -TemplatePath \"app-environment.json\")\n$testOutput\n\nif ($testOutput | ? {$_.Errors }) {\n   exit 1 \n} else {\n    Write-Host \"##vso[task.setvariable variable=result.best.practice]$true\"\n    exit 0\n} \n"
             failOnStderr: false
+            errorActionPreference: 'continue'
         - task: PowerShell@2
           displayName: Copy Files To Output Directory
           inputs:
