@@ -20,7 +20,7 @@ resource workspaces_AnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces
 
 // Application Insights
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/2020-02-02-preview/components?tabs=bicep
-resource components_ApplicationInsights 'microsoft.insights/components@2020-02-02-preview' = {
+resource components_ApplicationInsights 'microsoft.insights/components@2020-02-02' = {
   name: appInsightsName
   location: location
   kind: 'web'
