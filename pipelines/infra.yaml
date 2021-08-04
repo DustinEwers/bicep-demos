@@ -72,7 +72,7 @@ stages:
       environment: App-Dev
       variables:
         ResourceGroupName: 'swap-d01-rg'
-        EnvironmentConfigFile: 'app-dev.paramaters.json'
+        EnvironmentConfigFile: 'app-dev.parameters.json'
       strategy:
         runOnce:
           deploy:
