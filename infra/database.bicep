@@ -6,6 +6,8 @@ param dbSkuName string
 param dbSkuTier string
 
 param adminName string = '${uniqueString('BatteryHorseStapleCorrect!')}'
+
+@secure()
 param adminPassword string = 'BatteryHorseStapleCorrect!-${uniqueString(newGuid())}'
 
 // Docs: https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers?tabs=bicep
