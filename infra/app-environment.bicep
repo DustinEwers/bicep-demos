@@ -52,13 +52,12 @@ resource serverfarms_AppService 'Microsoft.Web/serverfarms@2020-09-01' = {
   }
 }
 
-resource sites_Service 'Microsoft.Web/sites@2020-06-01' = {
+resource sites_Service 'Microsoft.Web/sites@2021-03-01' = {
   name: serviceAppName
   kind: 'app,linux'
   location: location
   dependsOn: [
     appInsights
-    serverfarms_AppService
   ]
   properties: {
     enabled: true

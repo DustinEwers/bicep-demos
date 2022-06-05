@@ -5,7 +5,7 @@ param dbName string
 param dbSkuName string
 param dbSkuTier string
 
-param adminName string = '${uniqueString('BatteryHorseStapleCorrect!')}'
+param adminName string = uniqueString('BatteryHorseStapleCorrect!')
 
 @secure()
 param adminPassword string = newGuid()
