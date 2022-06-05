@@ -31,9 +31,6 @@ resource components_ApplicationInsights 'microsoft.insights/components@2020-02-0
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
   }
-  dependsOn:[
-    workspaces_AnalyticsWorkspace
-  ]
 }
 
 output InstrumentationKey string = components_ApplicationInsights.properties.InstrumentationKey
