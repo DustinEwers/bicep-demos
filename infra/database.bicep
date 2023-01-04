@@ -12,7 +12,7 @@ param adminPassword string = newGuid()
 
 // Docs: https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers?tabs=bicep
 
-resource app_databaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
+resource app_databaseServer 'Microsoft.Sql/servers@2021-11-01' = {
   name: dbServerName
   location: location
   properties: {
@@ -22,7 +22,7 @@ resource app_databaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
 }
 
 // Docs: https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases?tabs=bicep
-resource app_database 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
+resource app_database 'Microsoft.Sql/servers/databases@2021-11-01' = {
   name: '${dbServerName}/${dbName}' // The server/database naming is required or this won't work
   location: location
   

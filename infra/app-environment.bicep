@@ -37,7 +37,7 @@ module database './database.bicep' = {
   }
 }
 
-resource serverfarms_AppService 'Microsoft.Web/serverfarms@2020-09-01' = {
+resource serverfarms_AppService 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: appServicePlanName
   location: location
   sku: {
